@@ -1,0 +1,625 @@
+% Syntax changed in Prova Reloaded
+
+:- solve(checkABCDE()).
+not(A) :-
+        derive(A),
+        !,
+        fail().
+not(_).
+
+checkABCDE() :-
+       	println(["Evaluating ABCDE Approach"]),
+		rcvMult(XID,Protocol,From,inform,{patientID->PatientID}),
+		println(["Received ",{patientID->PatientID}]),
+		sparql_connect(Connection, "http://localhost:8080/DMRE-TRUNK-SNAPSHOT/DMSE/SPARQL/SPARQL"),
+        checkAirwayFree(Connection),
+		println(["sending the result back..."]),
+		sparql_disconnect(Connection),
+		sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Completed"}).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkAirwayFree(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+	  ?root fhir:Bundle.entry ?resource.
+	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+	                             FILTER(?code="69046-1" && ?value= "true"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkBreathes(Connection),
+	fail().
+checkAirwayFree(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+	  ?root fhir:Bundle.entry ?resource.
+	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+	                             FILTER(?code="69046-1" && ?value= "false"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in CheckAirway"}),
+	fail().
+checkAirwayFree(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkBreathes(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="9278-3" && ?value= "true"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkCyanosis(Connection).
+%	fail().
+checkBreathes(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="9278-3" && ?value= "false"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkBreathes"}),
+	fail().
+checkBreathes(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkCyanosis(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="39107-8" && ?value= "false"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkRespiratoryRate(Connection).
+%	fail().
+checkCyanosis(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="39107-8" && ?value= "true"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkCyansosis"}),
+	fail().
+checkCyanosis(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkRespiratoryRate(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+	  ?root fhir:Bundle.entry ?resource.
+	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+	  ?value ^fhir:value/^fhir:Quantity.value/^fhir:Observation.valueQuantity/^fhir:Bundle.entry.resource ?resource.
+	                             FILTER(?code="9279-1"  && ?value>=8 && ?value<=15).
+
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkChestExpansion(Connection).
+%	fail().
+checkRespiratoryRate(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+	  ?root fhir:Bundle.entry ?resource.
+	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+	  ?value ^fhir:value/^fhir:Quantity.value/^fhir:Observation.valueQuantity/^fhir:Bundle.entry.resource ?resource.
+	                             FILTER((?code="9279-1"  && ?value<8) || (?code="9279-1" && ?value>15)).
+
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkRespiratoryRate"}),
+	fail().
+checkRespiratoryRate(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkChestExpansion(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+		?root fhir:Bundle.entry ?resource.
+		?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+		?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+		?value ^fhir:value/^fhir:Observation.valueString/^fhir:Bundle.entry.resource ?resource.
+		                             FILTER(?code="67528-0"  && ?value="NORMAL").
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkRespiratoryRhytm(Connection).
+%	fail().
+checkChestExpansion(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+		?root fhir:Bundle.entry ?resource.
+		?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+		?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+		?value ^fhir:value/^fhir:Observation.valueString/^fhir:Bundle.entry.resource ?resource.
+		                             FILTER(?code="67528-0"  && ?value="NOT NORMAL").
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkChestExpansion"}),
+	fail().
+checkChestExpansion(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkRespiratoryRhytm(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+		?root fhir:Bundle.entry ?resource.
+		?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+		?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+		?value ^fhir:value/^fhir:Observation.valueString/^fhir:Bundle.entry.resource ?resource.
+		                             FILTER(?code="9304-7" && ?value="NORMAL").
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkSymmetricChestExpansion(Connection).
+%	fail().
+checkRespiratoryRhytm(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+		?root fhir:Bundle.entry ?resource.
+		?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+		?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+		?value ^fhir:value/^fhir:Observation.valueString/^fhir:Bundle.entry.resource ?resource.
+		                             FILTER(?code="9304-7" && ?value="NOT NORMAL").
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkRespiratoryRhythm"}),
+	fail().
+checkRespiratoryRhytm(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+		?root fhir:Bundle.entry ?resource.
+    	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+    	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+    	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+		                             FILTER((?code="9304-7" && ?value="false"^^xsd:boolean)).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkRespiratoryRhythm"}),
+	fail().
+checkRespiratoryRhytm(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+		?root fhir:Bundle.entry ?resource.
+    	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+    	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+    	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+		                             FILTER((?code="9304-7" && ?value="true"^^xsd:boolean)).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkSymmetricChestExpansion(Connection).
+%	fail().
+checkRespiratoryRhytm(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkSymmetricChestExpansion(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="248562002" && ?value= "true"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkOxygenSaturation(Connection).
+%	fail().
+checkSymmetricChestExpansion(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="248562002" && ?value= "false"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkSymmetricChestExpansion"}),
+%	fail().
+checkSymmetricChestExpansion(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkOxygenSaturation(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Quantity.value/^fhir:Observation.valueQuantity/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="20564-1"  && ?value>95 && ?value<=100).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkPulseRate(Connection).
+%	fail().
+checkOxygenSaturation(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Quantity.value/^fhir:Observation.valueQuantity/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="20564-1"  && ?value<95).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkOxygenSaturation"}),
+	fail().
+checkOxygenSaturation(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkPulseRate(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Quantity.value/^fhir:Observation.valueQuantity/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="8867-4" && ?value>=40 && ?value<=100).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkSystolicBloodPressure(Connection).
+%	fail().
+checkPulseRate(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Quantity.value/^fhir:Observation.valueQuantity/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER((?code="8867-4" && ?value<40) || (?code="8867-4" && ?value>100)).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkPulseRate"}),
+%	fail().
+checkPulseRate(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkSystolicBloodPressure(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Quantity.value/^fhir:Observation.valueQuantity/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="8480-6" && ?value>=100 && ?value<=150).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkPulseCentral(Connection).
+%	fail().
+checkSystolicBloodPressure(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Quantity.value/^fhir:Observation.valueQuantity/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER((?code="8480-6" && ?value<100) || (?code="8480-6" && ?value>150)).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkSystolicBloodPressure"}),
+%	fail().
+checkSystolicBloodPressure(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkPulseCentral(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="8900-3" && ?value= "true"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkPulsePeripheral(Connection).
+%	fail().
+checkPulseCentral(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="8900-3" && ?value= "false"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkPulseCentral"}),
+	fail().
+checkPulseCentral(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkPulsePeripheral(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="8911-0" && ?value= "true"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkGlucoseLevel(Connection).
+%	fail().
+checkPulsePeripheral(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="8911-0" && ?value= "false"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkPulsePeripheral"}),
+	fail().
+checkPulsePeripheral(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkGlucoseLevel(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Quantity.value/^fhir:Observation.valueQuantity/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="2339-0" && ?value>50 && ?value<500).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkGCSNumber(Connection).
+%	fail().
+checkGlucoseLevel(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Quantity.value/^fhir:Observation.valueQuantity/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER((?code="2339-0" && ?value<50) || (?code="2339-0" && ?value>500)).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkGlucoseLevel"}),
+%	fail().
+checkGlucoseLevel(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkGCSNumber(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Quantity.value/^fhir:Observation.valueQuantity/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="35088-4" && ?value<=15 && ?value>=12).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkPupilsisocore(Connection).
+	fail().
+checkGCSNumber(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Quantity.value/^fhir:Observation.valueQuantity/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="35088-4" && ?value<12).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkGCSNumber"}),
+	fail().
+checkGCSNumber(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkPupilsisocore(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="80313-0" && ?value= "true"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkHasStrokeSigns(Connection).
+%	fail().
+checkPupilsisocore(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="80313-0" && ?value= "false"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkPupilsisocore"}),
+	fail().
+checkPupilsisocore(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkHasStrokeSigns(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="72089-6" && ?value= "false"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkHasBleeding(Connection).
+%	fail().
+checkHasStrokeSigns(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="72089-6" && ?value= "true"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkHasStrokeSigns"}),
+	fail().
+checkHasStrokeSigns(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkHasBleeding(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="81661-1" && ?value= "false"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkHasBrokenBone(Connection).
+%	fail().
+checkHasBleeding(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="81661-1" && ?value= "true"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkHasBleeding"}),
+	fail().
+checkHasBleeding(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkHasBrokenBone(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="66571-1" && ?value= "false"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkHasAllergies(Connection).
+%	fail().
+checkHasBrokenBone(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="66571-1" && ?value= "true"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkHasBrokenBone"}),
+	fail().
+checkHasBrokenBone(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkHasAllergies(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="52571-7" && ?value= "false"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	checkHasPain(Connection).
+%	fail().
+checkHasAllergies(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="52571-7" && ?value= "true"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkHasAllergies"}),
+	fail().
+checkHasAllergies(_).
+
+%%%%%%%%%%%%%%%%%%%%  NEXT CHECKSECTION %%%%%%%%%%%%%%%%%%%%
+checkHasPain(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="52604-6" && ?value="false"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId).
+%	fail().
+checkHasPain(Connection) :-
+	QueryString = 'PREFIX fhir:<http://hl7.org/fhir/> ASK WHERE {
+  	  ?root fhir:Bundle.entry ?resource.
+  	  ?root fhir:Bundle.entry/fhir:Bundle.entry.resource/fhir:Patient.identifier/fhir:Identifier.value/fhir:value ?patientID.
+  	  ?resource fhir:Bundle.entry.resource/fhir:Observation.code/fhir:CodeableConcept.coding/fhir:Coding.code/fhir:value ?code.
+  	  ?value ^fhir:value/^fhir:Observation.valueBoolean/^fhir:Bundle.entry.resource ?resource.
+  	                             FILTER(?code="52604-6" && ?value="true"^^xsd:boolean).
+    }
+	',
+	sparql_ask(Connection, QueryString, QueryId),
+	sparql_results(QueryId),
+	sendMsg(XID,osgi,"FHIR",inform,{"ABCDECheckSPARQL"->"Issue in checkHasPain"}),
+	fail().
+checkHasPain(_).
