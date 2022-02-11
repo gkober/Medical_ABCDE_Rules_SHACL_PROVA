@@ -10,6 +10,8 @@ The Prova implementation is a more integrated version, since it has some prerequ
 
 *WorkflowRunnerAll* is the starting point of the execution; it goes over all generated FHIR observations, submits each of them to the RDF-Store, runs the Prova rules against the data, waits for the completion and the outcome, and finally stores it (for potential measurements) to a csv-file.
 
+It needs a webserver (e.g. Tomcat) for running the SPARQLService to submit, remove and ask SPARQL-queries.
+
 ## Executing the SHACL-Implementation
 
 ## Generation of FHIR-Data
